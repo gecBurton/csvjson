@@ -10,7 +10,17 @@ def _parse_row(row: str) -> List[Any]:
 def load(
     file_io: io.TextIOWrapper, header: bool = True
 ) -> Iterator[Union[Dict[str, Any], Any]]:
-    """implements https://github.com/DrorHarari/csvjson
+    """load csv into json following the web+csv format
+    https://github.com/DrorHarari/csvjson
+
+    :example:
+        >>> csv = '''"name", "age"
+        ...          "George, B",38
+        ...          "Alice", null
+        ...        '''
+        >>> list(load(io.StringIO(csv)))
+        [{'name': 'George, B', 'age': 38}, {'name': 'Alice', 'age': None}]
+
     """
     if header:
         field_names = _parse_row(file_io.readline())
