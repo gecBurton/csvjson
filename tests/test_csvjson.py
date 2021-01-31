@@ -8,7 +8,7 @@ import pytest
 from csvjson.csvjson import load
 
 
-def test_regular_CSV():
+def test_regular_csv():
     """https://github.com/DrorHarari/csvjson#regular-csv
     """
     csv = r"""1,"John","12 Totem Rd. Aspen",true
@@ -23,7 +23,7 @@ def test_regular_CSV():
     assert list(load(io.StringIO(csv), header=False)) == expected
 
 
-def test_CSV_with_headers_row():
+def test_csv_with_headers_row():
     """https://github.com/DrorHarari/csvjson#csv-with-headers-row
     """
 
@@ -45,7 +45,7 @@ def test_CSV_with_headers_row():
     assert list(load(io.StringIO(csv))) == expected
 
 
-def test_CSV_with_data_containing_quotes_and_commas():
+def test_csv_with_data_containing_quotes_and_commas():
     """https://github.com/DrorHarari/csvjson#csv-with-data-containing-quotes-and-commas
     """
 
@@ -67,7 +67,7 @@ def test_CSV_with_data_containing_quotes_and_commas():
     assert list(load(io.StringIO(csv))) == expected
 
 
-def test_CSV_with_complex_headers():
+def test_csv_with_complex_headers():
     """https://github.com/DrorHarari/csvjson#csv-with-complex-headers
     """
 
@@ -90,7 +90,7 @@ def test_CSV_with_complex_headers():
     assert list(load(io.StringIO(csv))) == expected
 
 
-def test_CSV_with_array_data():
+def test_csv_with_array_data():
     """https://github.com/DrorHarari/csvjson#csv-with-array-data
     """
 
@@ -111,7 +111,7 @@ def test_CSV_with_array_data():
     assert list(load(io.StringIO(csv), header=False, objects=True)) == expected
 
 
-def test_CSV_with_all_kinds_of_data():
+def test_csv_with_all_kinds_of_data():
     """https://github.com/DrorHarari/csvjson#csv-with-all-kinds-of-data
     """
 
