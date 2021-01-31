@@ -1,4 +1,5 @@
 import math
+from json import JSONDecodeError
 
 import pytest
 
@@ -32,11 +33,11 @@ def test_array():
 
 def test_csv_make_scanner_raises_stop_iteration_from_over_running_legitimate_text():
     csv_json_decoder = CSVJSONDecoder()
-    with pytest.raises(StopIteration):
-        csv_json_decoder.scan_once('["1"]', 4)
+    with pytest.raises(JSONDecodeError):
+        csv_json_decoder.scan_once('[1]', 2)
 
 
 def test_csv_make_scanner_raises_stop_iteration_from_illegitimate_text():
     csv_json_decoder = CSVJSONDecoder()
-    with pytest.raises(StopIteration):
-        csv_json_decoder.scan_once('["a"]', 1)
+    with pytest.raises(JSONDecodeError):
+        csv_json_decoder.scan_once('["a]', 1)
