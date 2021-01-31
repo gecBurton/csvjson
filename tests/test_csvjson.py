@@ -96,7 +96,10 @@ def test_CSV_with_array_data():
         [3, "drinks", ["soda", "water", "tea", "coffe"]],
         [4, "spells", []],
     ]
-    assert list(load(io.StringIO(csv), header=False)) == expected
+    with pytest.raises(ValueError) as error:
+        list(load(io.StringIO(csv), header=False))
+    assert str(error.value) == "array values not allowed"
+    assert list(load(io.StringIO(csv), header=False, objects=True)) == expected
 
 
 def test_CSV_with_all_kinds_of_data():
@@ -129,7 +132,10 @@ def test_CSV_with_all_kinds_of_data():
             "value2": "multi\nline\ntext",
         },
     ]
-    assert list(load(io.StringIO(csv))) == expected
+    with pytest.raises(ValueError) as error:
+        list(load(io.StringIO(csv), header=False))
+    assert str(error.value) == "array values not allowed"
+    assert list(load(io.StringIO(csv), objects=True)) == expected
 
 
 def test_incorrect_headers():
