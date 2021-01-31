@@ -9,7 +9,8 @@ from csvjson.csvjson import load
 
 
 def test_regular_CSV():
-
+    """https://github.com/DrorHarari/csvjson#regular-csv
+    """
     csv = r"""1,"John","12 Totem Rd. Aspen",true
     2,"Bob",null,false
     3,"Sue","Bigsby, 345 Carnival, WA 23009",false
@@ -23,6 +24,8 @@ def test_regular_CSV():
 
 
 def test_CSV_with_headers_row():
+    """https://github.com/DrorHarari/csvjson#csv-with-headers-row
+    """
 
     csv = r""""id","name","address","regular"
     1,"John","12 Totem Rd. Aspen",true
@@ -43,6 +46,8 @@ def test_CSV_with_headers_row():
 
 
 def test_CSV_with_data_containing_quotes_and_commas():
+    """https://github.com/DrorHarari/csvjson#csv-with-data-containing-quotes-and-commas
+    """
 
     csv = r""""id","name","address","regular"
     1,"John","12 Totem Rd., Aspen",true
@@ -63,6 +68,8 @@ def test_CSV_with_data_containing_quotes_and_commas():
 
 
 def test_CSV_with_complex_headers():
+    """https://github.com/DrorHarari/csvjson#csv-with-complex-headers
+    """
 
     csv = r"""{"field":"id","type":"int"},{"field":"name","type":"string"},{"field":"address","type":"string"},{"field":"regular","type":"boolean"}
     1,"John","12 Totem Rd. Aspen",true
@@ -84,6 +91,8 @@ def test_CSV_with_complex_headers():
 
 
 def test_CSV_with_array_data():
+    """https://github.com/DrorHarari/csvjson#csv-with-array-data
+    """
 
     csv = r"""1,"directions",["north","south","east","west"]
     2,"colors",["red","green","blue"]
@@ -103,6 +112,8 @@ def test_CSV_with_array_data():
 
 
 def test_CSV_with_all_kinds_of_data():
+    """https://github.com/DrorHarari/csvjson#csv-with-all-kinds-of-data
+    """
 
     csv = r""""index","value1","value2"
     "number",1,2
