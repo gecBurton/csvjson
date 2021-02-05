@@ -44,6 +44,27 @@ def test_csv_with_headers_row():
     ]
     assert list(load(io.StringIO(csv))) == expected
 
+def test_csv_with_empty_strings():
+    """https://github.com/DrorHarari/csvjson#csv-with-headers-row
+    """
+
+    csv = r""""id","name","address","regular"
+    1,"John","12 Totem Rd. Aspen",
+    2,"Bob",,false
+    3,"Sue","Bigsby, 345 Carnival, WA 23009",false
+    """
+    expected = [
+        {"address": "12 Totem Rd. Aspen", "id": 1, "name": "John", "regular": None},
+        {"address": None, "id": 2, "name": "Bob", "regular": False},
+        {
+            "address": "Bigsby, 345 Carnival, WA 23009",
+            "id": 3,
+            "name": "Sue",
+            "regular": False,
+        },
+    ]
+    assert list(load(io.StringIO(csv))) == expected
+
 
 def test_csv_with_data_containing_quotes_and_commas():
     """https://github.com/DrorHarari/csvjson#csv-with-data-containing-quotes-and-commas
@@ -87,7 +108,9 @@ def test_csv_with_complex_headers():
             "regular": False,
         },
     ]
-    assert list(load(io.StringIO(csv))) == expected
+    with pytest.raises(ValueError) as error:
+        list(load(io.StringIO(csv)))
+    assert str(error.value) == "all terms in the header must be strings"
 
 
 def test_csv_with_array_data():
@@ -105,10 +128,7 @@ def test_csv_with_array_data():
         [3, "drinks", ["soda", "water", "tea", "coffe"]],
         [4, "spells", []],
     ]
-    with pytest.raises(ValueError) as error:
-        list(load(io.StringIO(csv), header=False))
-    assert str(error.value) == "array values not allowed"
-    assert list(load(io.StringIO(csv), header=False, objects=True)) == expected
+    assert list(load(io.StringIO(csv), header=False)) == expected
 
 
 def test_csv_with_all_kinds_of_data():
@@ -143,10 +163,7 @@ def test_csv_with_all_kinds_of_data():
             "value2": "multi\nline\ntext",
         },
     ]
-    with pytest.raises(ValueError) as error:
-        list(load(io.StringIO(csv), header=False))
-    assert str(error.value) == "array values not allowed"
-    assert list(load(io.StringIO(csv), objects=True)) == expected
+    assert list(load(io.StringIO(csv))) == expected
 
 
 def test_incorrect_headers():
@@ -156,7 +173,7 @@ def test_incorrect_headers():
     with pytest.raises(ValueError) as error:
         list(load(io.StringIO(csv)))
     assert (
-        str(error.value) == "all terms in the header should be strings or json-objects"
+        str(error.value) == "all terms in the header must be strings"
     )
 
 
