@@ -166,6 +166,41 @@ def test_csv_with_all_kinds_of_data():
     assert list(load(io.StringIO(csv))) == expected
 
 
+def test_csv_with_all_kinds_of_data_and_cases():
+    """https://github.com/DrorHarari/csvjson#csv-with-all-kinds-of-data
+    """
+
+    csv = r""""index","value1","value2"
+    "number",1,2
+    "boolean",false,TRUE
+    "null",,"non null"
+    "array of numbers",[1],[1,2]
+    "simple object",{"a": 1},{"a":1, "b":2}
+    "array with mixed objects",[1,NULL,"ball"],[2,{"a": 10, "b": 20},"cube"]
+    "string with quotes","a\"b","alert(\"Hi!\")"
+    "string with bell&newlines","bell is \u0007","multi\nline\ntext"
+    """
+    expected = [
+        {"index": "number", "value1": 1, "value2": 2},
+        {"index": "boolean", "value1": False, "value2": True},
+        {"index": "null", "value1": None, "value2": "non null"},
+        {"index": "array of numbers", "value1": [1], "value2": [1, 2]},
+        {"index": "simple object", "value1": {"a": 1}, "value2": {"a": 1, "b": 2}},
+        {
+            "index": "array with mixed objects",
+            "value1": [1, None, "ball"],
+            "value2": [2, {"a": 10, "b": 20}, "cube"],
+        },
+        {"index": "string with quotes", "value1": 'a"b', "value2": 'alert("Hi!")'},
+        {
+            "index": "string with bell&newlines",
+            "value1": "bell is \x07",
+            "value2": "multi\nline\ntext",
+        },
+    ]
+    assert list(load(io.StringIO(csv))) == expected
+
+
 def test_incorrect_headers():
     csv = r""""index","value1",2
     "number",1,2"""
@@ -177,12 +212,15 @@ def test_incorrect_headers():
     )
 
 
-def test_different_row_lengths():
+@pytest.mark.parametrize("header", [True, False])
+def test_different_row_lengths(header):
     csv = r""""index","value1","value2"
     "number",1"""
 
     with pytest.raises(ValueError) as error:
-        list(load(io.StringIO(csv)))
+        list(load(io.StringIO(csv), header=header))
     assert (
-        str(error.value) == "all rows must have the same number of terms as the header"
+        str(error.value) == "all rows must have the same number of columns"
     )
+
+

@@ -31,10 +31,17 @@ def load(
 
     """
     if not header:
+        first_row = _parse_row(file_io.readline())
+        yield first_row
         for line in file_io.readlines():
             if not line.strip():
                 break
-            yield _parse_row(line)
+            row = _parse_row(line)
+            if len(row) != len(first_row):
+                raise ValueError(
+                    "all rows must have the same number of columns"
+                )
+            yield row
 
     field_names = _parse_row(file_io.readline())
     if not all(isinstance(field_name, str) for field_name in field_names):
@@ -50,6 +57,6 @@ def load(
 
         if len(field_values) != len(field_names):
             raise ValueError(
-                "all rows must have the same number of terms as the header"
+                "all rows must have the same number of columns"
             )
         yield dict(zip(field_names, field_values))

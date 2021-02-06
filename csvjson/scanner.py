@@ -36,11 +36,11 @@ def csv_make_scanner(context):
                                 _scan_once, object_hook, object_pairs_hook, memo)
         elif nextchar == '[':
             return parse_array((string, idx + 1), _scan_once)
-        elif nextchar == "n" and string[idx : idx + 4] == "null":
+        elif nextchar.lower() == "n" and string[idx : idx + 4].lower() == "null":
             return None, idx + 4
-        elif nextchar == "t" and string[idx : idx + 4] == "true":
+        elif nextchar.lower() == "t" and string[idx : idx + 4].lower() == "true":
             return True, idx + 4
-        elif nextchar == "f" and string[idx : idx + 5] == "false":
+        elif nextchar.lower() == "f" and string[idx : idx + 5].lower() == "false":
             return False, idx + 5
         elif nextchar in ",]" :
             return None, idx
