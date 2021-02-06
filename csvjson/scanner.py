@@ -1,60 +1,65 @@
 """JSON token scanner
+follows json.scanner.py
 """
-import re
-
-__all__ = ["csv_make_scanner"]
-
-NUMBER_RE = re.compile(
-    r"(-?(?:0|[1-9]\d*))(\.\d+)?([eE][-+]?\d+)?",
-    (re.VERBOSE | re.MULTILINE | re.DOTALL),
-)
+import json
 
 
 def csv_make_scanner(context):
+    parse_object = context.parse_object
     parse_array = context.parse_array
     parse_string = context.parse_string
-    match_number = NUMBER_RE.match
+    match_number = json.scanner.NUMBER_RE.match
     strict = context.strict
     parse_float = context.parse_float
     parse_int = context.parse_int
     parse_constant = context.parse_constant
+    object_hook = context.object_hook
+    object_pairs_hook = context.object_pairs_hook
     memo = context.memo
 
     def _scan_once(string, idx):
         try:
-            nextchar = string[idx]
+            next_char = string[idx]
         except IndexError:
             raise StopIteration(idx) from None
 
-        if nextchar == '"':
+        if next_char == '"':
             return parse_string(string, idx + 1, strict)
-        elif nextchar == "{":
-            raise ValueError("object values not allowed")
-        elif nextchar == "[":
-            raise ValueError("array values not allowed")
-        elif nextchar == "n" and string[idx : idx + 4] == "null":
+        if next_char == "{":
+            return parse_object(
+                (string, idx + 1),
+                strict,
+                _scan_once,
+                object_hook,
+                object_pairs_hook,
+                memo,
+            )
+        if next_char == "[":
+            return parse_array((string, idx + 1), _scan_once)
+        if string[idx : idx + 4].lower() == "null":
             return None, idx + 4
-        elif nextchar == "t" and string[idx : idx + 4] == "true":
+        if string[idx : idx + 4].lower() == "true":
             return True, idx + 4
-        elif nextchar == "f" and string[idx : idx + 5] == "false":
+        if string[idx : idx + 5].lower() == "false":
             return False, idx + 5
+        if next_char in ",]":
+            return None, idx
 
-        m = match_number(string, idx)
-        if m is not None:
-            integer, frac, exp = m.groups()
-            if frac or exp:
-                res = parse_float(integer + (frac or "") + (exp or ""))
+        number = match_number(string, idx)
+        if number is not None:
+            integer, fraction, exponent = number.groups()
+            if fraction or exponent:
+                res = parse_float(integer + (fraction or "") + (exponent or ""))
             else:
                 res = parse_int(integer)
-            return res, m.end()
-        elif nextchar == "N" and string[idx : idx + 3] == "NaN":
+            return res, number.end()
+        if string[idx : idx + 3] == "NaN":
             return parse_constant("NaN"), idx + 3
-        elif nextchar == "I" and string[idx : idx + 8] == "Infinity":
+        if string[idx : idx + 8] == "Infinity":
             return parse_constant("Infinity"), idx + 8
-        elif nextchar == "-" and string[idx : idx + 9] == "-Infinity":
+        if string[idx : idx + 9] == "-Infinity":
             return parse_constant("-Infinity"), idx + 9
-        else:
-            raise StopIteration(idx)
+        raise StopIteration(idx)
 
     def scan_once(string, idx):
         try:
